@@ -51,9 +51,7 @@ public class Cidr {
     
     public List<Cidr> subnet_for_hosts (uint32 max_ip) {
         List<Cidr?> networks_list = new List<Cidr> ();
-        
-        //print ("For %u ip addresses\n", max_ip);
-        
+
         if (max_ip >= get_max_hosts ()) {
             warning ("Too many hosts requested!");
             return networks_list;
@@ -79,9 +77,9 @@ public class Cidr {
         uint32 networks_count = (~(_binary_netmask | binary_hosts_mask) >> hosts_bits) + 1;
         uint32 network_mask = _binary_netmask | ~binary_hosts_mask;
         
-        //print (" - bits for hosts : %d\n", hosts_bits);
-        //print (" - network mask   : %X\n", network_mask);
-        //print (" - nbr of networks: %u\n", networks_count);
+        debug (" - bits for hosts : %d\n", hosts_bits);
+        debug (" - network mask   : %X\n", network_mask);
+        debug (" - nbr of networks: %u\n", networks_count);
 
         // One network found. It's the current Cidr object.
         if (networks_count == 1) {
@@ -91,15 +89,14 @@ public class Cidr {
 
         for (var network = 0; network < networks_count; network++) {
             uint32 tmp_network_ip = (_binary_ip & _binary_netmask) | (network << hosts_bits);  
-            //uint32 tmp_broadcast = tmp_network_ip | ~network_mask;
-            /*        
-            print (" net %d - %s/%s (%X) - Broad: %s\n", 
+
+            debug (" Net %d - %s/%s (%X) - Brd: %s\n",
                   network, 
                   binary_ip_to_string (tmp_network_ip),
                   binary_ip_to_string (network_mask),
                   network_mask, 
-                  binary_ip_to_string (tmp_broadcast));
-            */
+                  binary_ip_to_string (tmp_network_ip | ~network_mask));
+
             networks_list.append(new Cidr (tmp_network_ip, network_mask));
         }
         
@@ -124,22 +121,20 @@ public class Cidr {
         
         uint32 effective_max_network = (1 << network_bits);
 
-        /*
-        print ("bits     : %u for %u networks\n", network_bits, max_networks);
-        print ("max ntwrk: %u\n", effective_max_network);
-        print ("Mask     : %X\n" , network_mask);
-        print ("Mx hosts : %u\n" , max_hosts);
-        print ("mask lng : %u\n" , network_length);
-        */
+        debug ("bits     : %u for %u networks\n", network_bits, max_networks);
+        debug ("max ntwrk: %u\n", effective_max_network);
+        debug ("Mask     : %X\n" , network_mask);
+        debug ("Mx hosts : %u\n" , max_hosts);
+        debug ("mask lng : %u\n" , network_length);
         
         for (uint32 i=0; i < effective_max_network; i++) {
             uint32 temp_network_ip = (_binary_ip & network_mask) | (i << (32 - network_length));
-            /*
-            print ("** Network: %s/%s) (%X)\n", 
+
+            debug ("** Network: %s/%s) (%X)\n",
                    binary_ip_to_string (temp_network_ip),
                    binary_ip_to_string(network_mask),
-                    temp_network_ip);
-            */
+                   temp_network_ip);
+
             network_list.append(new Cidr (temp_network_ip, network_mask));
         }
 
@@ -186,6 +181,7 @@ public class Cidr {
 	    }
 	    
 	    ValidateFunc validate_block = (str, out val) => {
+	        // TODO: try_parse is a better option
 	        val = uint.parse (str);
             return (val >= 0 && val <= 255);
 	    };
