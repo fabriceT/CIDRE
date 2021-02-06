@@ -81,7 +81,13 @@ public class Cidr {
         //print (" - bits for hosts : %d\n", hosts_bits);
         //print (" - network mask   : %X\n", network_mask);
         //print (" - nbr of networks: %u\n", networks_count);
-             
+
+        // One network found. It's the current Cidr object.
+        if (networks_count == 1) {
+            networks_list.append(this);
+            return networks_list;
+        }
+
         for (var network = 0; network < networks_count; network++) {
             uint32 tmp_network_ip = (_binary_ip & _binary_netmask) | (network << hosts_bits);  
             //uint32 tmp_broadcast = tmp_network_ip | ~network_mask;
@@ -96,8 +102,6 @@ public class Cidr {
             networks_list.append(new Cidr (tmp_network_ip, network_mask));
         }
         
-        // We should not return a list if only one network exists as this network
-        // is a copy of the current network, `this`. But, who cares?
         return networks_list;
     }
     
