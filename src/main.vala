@@ -12,12 +12,14 @@ public static void print_cidr_info (Cidr cidr) {
            cidr.get_max_hosts ());
 }
 
-public static void list_subnet_for_hosts (Cidr cidr, int max_ip) {
+public static List<Cidr?> list_subnet_for_hosts (Cidr cidr, int max_ip) {
     var l = cidr.subnet_for_hosts (max_ip);
     print ("====== Found %u networks for %d hosts ======\n", l.length (), max_ip);
     foreach (var i in l) {
         print_cidr_info (i);
     }
+
+    return l;
 }
 
 public static void list_subnet_for_networks (Cidr cidr, int max_network) {
@@ -29,20 +31,7 @@ public static void list_subnet_for_networks (Cidr cidr, int max_network) {
 }
 
 public static int main (string[] args) {
-/*
-    var c0 = Cidr.from_string ("192.256.1.1/13");
-    print_cidr_info (c0);
-    
-    var c1 = Cidr.from_string ("0.0.0.1/113");
-    print_cidr_info (c0);
-    
-    var c11 = Cidr.from_string ("10.1.1.0/16");
-    print_cidr_info (c11);
-    
-    var c4 = Cidr.from_string("1.1.1.1/32");
-    print_cidr_info (c4);
 
-*/
     var c2 = Cidr.from_string ("192.168.231.1/24");
     print_cidr_info (c2);
     
@@ -51,17 +40,15 @@ public static int main (string[] args) {
     list_subnet_for_hosts (c2, 32);
     */
     list_subnet_for_hosts (c2, 62);
-    /*
     list_subnet_for_hosts (c2, 96);
-    list_subnet_for_hosts (c2, 128);
+    /*
     list_subnet_for_hosts (c2, 260);
-    */
     list_subnet_for_networks (c2, 3);
     list_subnet_for_networks (c2, 6);
     list_subnet_for_networks (c2, 15);
     list_subnet_for_networks (c2, 63);
+    */
   
-
     print ("\nend\n");
     return 0;
     

@@ -16,6 +16,8 @@ add_project_arguments(
 
 #subdir('config')
 subdir('src')
+subdir('tests')
+
 
 executable(
 	meson.project_name(),
@@ -25,4 +27,8 @@ executable(
 	#include_directories: config_dir,
 	install: true
 )
+
+
+test = executable('unit-test', sources: test1_sources, dependencies : dependencies)
+test('unit-tests', test)
 
