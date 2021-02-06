@@ -11,6 +11,7 @@ public class Cidr {
     uint32 _binary_netmask = ~0;
 
 
+
     // Create a new Cdir Object:
     public Cidr (uint32 binary_ip, uint32 binary_mask) {
         _binary_ip = binary_ip;
@@ -165,13 +166,7 @@ public class Cidr {
         return i;
     }
     
-    
-    private static bool validate_block (string str, out uint val) {
-        // TODO: try_parse is a better option
-        val = uint.parse (str);
-        return (val >= 0 && val <= 255);
-	}
-    
+    delegate bool ValidateFunc (string str, out uint val);
     
     public static Cidr? from_string (string str) {
         MatchInfo match_info;
@@ -190,7 +185,12 @@ public class Cidr {
 	        return null;
 	    }
 	    
-	    bool ip_valid = validate_block (match_info.fetch (1), out block1) 
+	    ValidateFunc validate_block = (str, out val) => {
+	        val = uint.parse (str);
+            return (val >= 0 && val <= 255);
+	    };
+
+	    bool ip_valid = validate_block (match_info.fetch (1), out block1)
 	                 && validate_block (match_info.fetch (2), out block2)
 	                 && validate_block (match_info.fetch (3), out block3)
 	                 && validate_block (match_info.fetch (4), out block4);
